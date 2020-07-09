@@ -41,7 +41,6 @@ class RibConsumer():
             intervals.append(interval)
         return intervals
 
-    @staticmethod
     def get_ribs(self,output_directory, date=None, intervals=None, collector_list=None):
         #http://archive.routeviews.org/route-views.amsix/bgpdata/2020.06/RIBS/rib.20200601.0000.bz2
         intervals = intervals if intervals is not None else self.create_intervals()
