@@ -8,7 +8,7 @@ from  components.neo import NeoInterface
 if __name__ == '__main__':
     rib = RibConsumer()
     #print(rib.get_ribs('ribs', intervals=['0000', '0100'], collector_list=['route-views.saopaulo']))
-    print(rib.get_ribs('ribs', intervals=['0000']))
+    print(rib.get_ribs('ribs', intervals=['0000'], collector_list=['route-views.linx', 'route-views.amsix', 'route-views.kixp', 'route-views.jinx'])))
     #tal = TalConsumer()
     #tal_values = tal.tals_to_list()
     #trc = TracerouteConsumer(max_files=1, output_dir='traceroutes')
