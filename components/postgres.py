@@ -3,14 +3,14 @@ from configparser import ConfigParser
 import os
 import csv
 from io import StringIO
+from psycopg2.extensions import AsIs
 
 class PostgresInterface():
-    def read_config(self, filename='E:/Stuff/Code/data_grabber/components/configs/database.ini', section='postgresql'):
+    def read_config(self, filename='components/configs/database.ini', section='postgresql'):
         # create a parser
         parser = ConfigParser()
         # read config file
         parser.read(filename)
-        print(os.path.realpath(__file__) )
 
         # get section, default to postgresql
         db_params = {}
@@ -20,7 +20,6 @@ class PostgresInterface():
                 db_params[param[0]] = param[1]
         else:
             raise Exception('Section {0} not found in the {1} file'.format(section, filename))
-        print(db_params)
         return db_params
 
     def check_version(self):
@@ -56,11 +55,11 @@ class PostgresInterface():
 
     def create_tal_table(self):
         """ create tables in the PostgreSQL database"""
-        commands = (
+        command = (
             """
             CREATE TABLE tals (
                 Route_ID SERIAL PRIMARY KEY,
-                Autonomous_System INT NOT NULL,
+                Autonomous_System bigint NOT NULL,
                 Route INET NOT NULL,
                 Start_Date DATE NOT NULL,
                 End_Date DATE NOT NULL
@@ -74,8 +73,7 @@ class PostgresInterface():
             conn = psycopg2.connect(**params)
             cur = conn.cursor()
             # create table one by one
-            for command in commands:
-                cur.execute(command)
+            cur.execute(command)
             # close communication with the PostgreSQL database server
             cur.close()
             # commit the changes
@@ -86,10 +84,18 @@ class PostgresInterface():
             if conn is not None:
                 conn.close()
 
-    def import_tals_to_postgres(self, data):
-        f = StringIO()
-        for item in data:
-            f.writelines(item)
+    def create_as_name_table(self):
+        """ create tables in the PostgreSQL database"""
+        command = (
+            """
+            CREATE TABLE as_names (
+                Id SERIAL PRIMARY KEY,
+                ASN bigint NOT NULL,
+                Name TEXT,
+                Country TEXT
+            )
+            """)
+        conn = None
         try:
             # read the connection parameters
             params = self.read_config()
@@ -97,7 +103,26 @@ class PostgresInterface():
             conn = psycopg2.connect(**params)
             cur = conn.cursor()
             # create table one by one
-            cur.copy_from(f, 'tals', sep=',')
+            cur.execute(command)
+            # close communication with the PostgreSQL database server
+            cur.close()
+            # commit the changes
+            conn.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+        finally:
+            if conn is not None:
+                conn.close()
+
+    def insert_tals(self, data):
+        try:
+            # read the connection parameters
+            params = self.read_config()
+            # connect to the PostgreSQL server
+            conn = psycopg2.connect(**params)
+            cur = conn.cursor()
+            # create table one by one
+            cur.executemany("INSERT into tals(Autonomous_System, Route, Start_Date, End_Date) VALUES (%s, %s, %s, %s)", data)
             # close communication with the PostgreSQL database server
             cur.close()
             # commit the changes
@@ -110,5 +135,29 @@ class PostgresInterface():
     def import_ribs_to_postgres(self, data):
         return False
         #copy_expert(sql, file, size=8192):
+
+    def insert_asn_names(self, data):
+        try:
+            # read the connection parameters
+            params = self.read_config()
+            # connect to the PostgreSQL server
+            conn = psycopg2.connect(**params)
+            cur = conn.cursor()
+            cur.executemany(
+                'INSERT INTO as_names(asn, name, country) '
+                'VALUES (%(asn)s, %(name)s, %(country)s)',
+                data
+            )
+            # close communication with the PostgreSQL database server
+            cur.close()
+            # commit the changes
+            conn.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+        finally:
+            if conn is not None:
+                conn.close()
+        return None
+
 if __name__ == '__main__':
     print('Postgres interface is main')
