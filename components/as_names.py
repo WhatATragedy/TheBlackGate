@@ -25,6 +25,6 @@ class ASNNames():
             asn_name_data.append({
                 'asn': asn_number,
                 'name': asn_name,
-                'country': asn_country.replace('\n', '')
+                'country': asn_country.replace('\n', '').replace(' ', '')
             })  
         return asn_name_data
