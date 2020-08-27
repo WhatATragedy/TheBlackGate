@@ -6,6 +6,7 @@ from rib import RibConsumer
 import logging
 from logging.config import fileConfig
 from aiologger import Logger
+from aiologger.loggers.json import JsonLogger
 import uvloop
 import os 
 import aiofiles
@@ -40,7 +41,8 @@ async def streamer(input_queue):
                 batch.clear()
             _, timestamp, _, collect_ip, collect_asn, prefix, path, _ = line.split('|')
             timestamp = datetime.datetime.strptime(timestamp.replace('/', '-'), "%m-%d-%y %H:%M:%S")
-            batch.append((timestamp, collect_ip, int(collect_asn), prefix, path))
+            values = (timestamp, collect_ip, int(collect_asn), prefix, path)
+            batch.append(values)
     await input_queue.put(None)
                     
 
@@ -84,8 +86,6 @@ async def write_tables(conn):
     )
 async def main():
     logger.debug("Starting Up...")
-    rib_files = RibConsumer.current_rib_files()
-    print(rib_files)
 
     # uvloop is a faster eventloop implenation
     uvloop.install()
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
 
     # Use an async logger
-    logger = Logger.with_default_handlers(loop = loop)
+    logger = JsonLogger.with_default_handlers()
 
     # uvloop is a faster eventloop implenation
     uvloop.install()
