@@ -6,7 +6,7 @@ import datetime
 import os
 import errno
 import bz2
-from .bgpdump import BgpDump
+from bgpdump import BgpDump
 from multiprocessing import Pool
 import itertools
 
