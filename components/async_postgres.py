@@ -33,7 +33,7 @@ class Async_Postgres():
         logger.debug("Streamer Spawned...")
         rib_instance = RibConsumer()
         batch = []
-        for index, line in enumerate(rib_instance.reader("E:\Stuff\Code\TheBlackGate\\ribs")):
+        for index, line in enumerate(rib_instance.reader(file='E:\Stuff\Code\TheBlackGate\\ribs\\route-views.eqix\\rib.20200713.0000')):
             if index == 5000:
                 #batch ready
                 await input_queue.put(batch.copy())
@@ -98,7 +98,7 @@ class Async_Postgres():
         async with pg_pool.acquire() as conn:
             await Async_Postgres.write_tables(conn)
         queue = asyncio.Queue()
-        asyncio.create_task(Async_Postgres.consumer(pg_pool, queue))
+        asyncio.create_task(Async_Postgres.consumer(pg_pool, queue)),
         data_streams = asyncio.create_task(Async_Postgres.streamer(queue))
         await asyncio.gather(data_streams)
         await logger.shutdown()

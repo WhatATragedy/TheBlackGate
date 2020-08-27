@@ -12,7 +12,7 @@ if __name__ == '__main__':
     rib = RibConsumer()
     #print(rib.get_ribs('ribs', intervals=['0000', '0100'], collector_list=['route-views.saopaulo']))
     #rib.get_ribs('ribs', intervals=['0000'], collector_list=['route-views.linx', 'route-views.amsix', 'route-views.kixp', 'route-views.jinx'])
-    rib.get_ribs('ribs', intervals=['0000'], collector_list=['route-views.amsix'])
+    #rib.get_ribs('ribs', intervals=['0000'], collector_list=['route-views.amsix'])
     #rib.get_ribs('ribs', intervals=['0000'], collector_list=['route-views.linx', 'route-views.amsix', 'route-views.jinx'])
     #tal = TalConsumer()
     #tal.get_tal_files(output_directory='tals')
@@ -21,29 +21,19 @@ if __name__ == '__main__':
     #trc.get_traceroutes()
     #trc.decompress_files()
     #results = trc.ingest_to_neo('/home/ec2-user/TheBlackGate/traceroutes/tracert-2020-06-28T0000.')
-    as_names_data = ASNNames().get_asn_names()
+    #as_names_data = ASNNames().get_asn_names()
     #print(as_names_data)
     #mongo = MongoInterface(host='localhost')
     #mongo.insert_dict(as_names_data, 'routing_info', 'asn_whois')
-<<<<<<< HEAD
     #postgres = PostgresInterface()
     #postgres.check_version()
     #postgres.create_tal_table()
     #postgres.create_as_name_table()
     #postgres.insert_tals(tal_values)
     #postgres.insert_asn_names(as_names_data)
-=======
-    postgres = PostgresInterface()
-    #postgres.check_version()
-    #postgres.create_tal_table()
-    postgres.create_as_name_table()
-    #postgres.insert_tals(tal_values)
-    postgres.insert_asn_names(as_names_data)
     #first_row = rib.reader()
-    #for row in rib.reader():
-    #    print(row)
-    #print(first_row)
->>>>>>> ec664bbe40b6908390254e5604eff559c3886df3
+    for row in rib.reader(file='E:\Stuff\Code\TheBlackGate\\ribs\\route-views.eqix\\rib.20200713.0000'):
+        print(row)
 
 
 

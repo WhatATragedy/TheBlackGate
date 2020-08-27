@@ -133,7 +133,6 @@ class PostgresInterface():
         finally:
             if conn is not None:
                 conn.close()
-<<<<<<< HEAD
                 
     def insert_ribs(self, data):
         """ create tables in the PostgreSQL database"""
@@ -164,8 +163,6 @@ class PostgresInterface():
         finally:
             if conn is not None:
                 conn.close()
-=======
->>>>>>> ec664bbe40b6908390254e5604eff559c3886df3
 
     def insert_asn_names(self, data):
         conn = None
