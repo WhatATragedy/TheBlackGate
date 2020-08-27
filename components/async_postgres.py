@@ -5,7 +5,7 @@ import time
 
 class Async_Postgres():
     def  __init__(self,):
-        self.dsn = 'dbname={database} user={user} host={host}'.format(**CONN_INFO)
+        self.dsn = 'dbname={database} user={user} host={host}'.format(**self.read_config())
     
     def read_config(self, filename='components/configs/database.ini', section='postgresql'):
         # create a parser
@@ -22,14 +22,6 @@ class Async_Postgres():
         else:
             raise Exception('Section {0} not found in the {1} file'.format(section, filename))
         return db_params
-    CONN_INFO = {
-    'host': 'POSTGRESQL_SERVER',
-    'user': 'user_name',
-    'port': 1234,
-    'database': 'some_dabase',
-}
-
-dsn = 'dbname={database} user={user} host={host}'.format(**self.read_config())
 
 
 async def insert_data(pool, line):

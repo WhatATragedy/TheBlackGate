@@ -57,7 +57,7 @@ class RibConsumer():
             print(collector, interval)
             pool_args.append((collector, interval, output_directory, date))
         print(pool_args)
-        with Pool(5) as pool:
+        with Pool(3) as pool:
            pool.starmap(self.map_collections_to_process, pool_args)
 
     def map_collections_to_process(self, collector, interval, output_directory, date):
