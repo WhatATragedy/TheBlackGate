@@ -133,6 +133,39 @@ class PostgresInterface():
         finally:
             if conn is not None:
                 conn.close()
+<<<<<<< HEAD
+                
+    def insert_ribs(self, data):
+        """ create tables in the PostgreSQL database"""
+        command = (
+            """
+            CREATE TABLE as_names (
+                Id SERIAL PRIMARY KEY,
+                ASN bigint NOT NULL,
+                Name TEXT,
+                Country TEXT
+            )
+            """)
+        conn = None
+        try:
+            # read the connection parameters
+            params = self.read_config()
+            # connect to the PostgreSQL server
+            conn = psycopg2.connect(**params)
+            cur = conn.cursor()
+            # create table one by one
+            cur.execute(command)
+            # close communication with the PostgreSQL database server
+            cur.close()
+            # commit the changes
+            conn.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+        finally:
+            if conn is not None:
+                conn.close()
+=======
+>>>>>>> ec664bbe40b6908390254e5604eff559c3886df3
 
     def insert_asn_names(self, data):
         conn = None
