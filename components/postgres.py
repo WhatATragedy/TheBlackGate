@@ -4,6 +4,7 @@ import os
 import csv
 from io import StringIO
 from psycopg2.extensions import AsIs
+from components.rib import RibConsumer
 
 class PostgresInterface():
     def read_config(self, filename='components/configs/database.ini', section='postgresql'):
@@ -132,6 +133,7 @@ class PostgresInterface():
         finally:
             if conn is not None:
                 conn.close()
+<<<<<<< HEAD
                 
     def insert_ribs(self, data):
         """ create tables in the PostgreSQL database"""
@@ -162,8 +164,11 @@ class PostgresInterface():
         finally:
             if conn is not None:
                 conn.close()
+=======
+>>>>>>> ec664bbe40b6908390254e5604eff559c3886df3
 
     def insert_asn_names(self, data):
+        conn = None
         try:
             # read the connection parameters
             params = self.read_config()
