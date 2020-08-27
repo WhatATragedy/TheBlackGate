@@ -102,7 +102,7 @@ class RibConsumer():
         files = []
         for directory in os.listdir(ribs_directory):
             for filename in os.listdir(f"{ribs_directory}/{directory}"):
-                files.append(f"{ribs_directory}/{directory}/{filename}")
+                files.append(f"{ribs_directory}{directory}/{filename}")
         return files
 
 

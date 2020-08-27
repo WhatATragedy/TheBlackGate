@@ -28,12 +28,13 @@ def read_config(filename='configs/database.ini', section='postgresql'):
         raise Exception('Section {0} not found in the {1} file'.format(section, filename))
     return db_params
     
-async def streamer(input_queue):
+async def streamer(filename, input_queue):
     #this is going to stream data into the input queue
     logger.debug("Streamer Spawned...")
     batch = []
     sql_id = 0
-    async with aiofiles.open(f"/home/ec2-user/TheBlackGate/ribs/route-views.kixp/rib.20200819.0000", mode='r') as f:
+    logger.debug(filename)
+    async with aiofiles.open(filename, mode='r') as f:
         async for line in f:
             if len(batch) > 10000:
                 logger.debug("Batch Ready")
@@ -41,7 +42,7 @@ async def streamer(input_queue):
                 batch.clear()
             _, timestamp, _, collect_ip, collect_asn, prefix, path, _ = line.split('|')
             timestamp = datetime.datetime.strptime(timestamp.replace('/', '-'), "%m-%d-%y %H:%M:%S")
-            values = (timestamp, collect_ip, int(collect_asn), prefix, path)
+            values = (filename.rsplit('/')[1],timestamp, collect_ip, int(collect_asn), prefix, path)
             batch.append(values)
     await input_queue.put(None)
                     
@@ -76,6 +77,7 @@ async def write_tables(conn):
         """
         DROP TABLE IF EXISTS ribs;
         CREATE TABLE ribs (
+            Source TEXT,
             Collect_Date TIMESTAMP NOT NULL,
             Collect_IP INET NOT NULL,
             Collect_ASN bigint NOT NULL,
@@ -86,7 +88,7 @@ async def write_tables(conn):
     )
 async def main():
     logger.debug("Starting Up...")
-
+    ribs = RibConsumer.current_rib_files(ribs_directory='/home/ec2-user/TheBlackGate/ribs/')
     # uvloop is a faster eventloop implenation
     uvloop.install()
 
@@ -98,16 +100,14 @@ async def main():
         await write_tables(conn)
 
     loop = asyncio.get_event_loop()
-    queue = asyncio.Queue(loop = loop)
-    consumer_func = consumer(pg_pool, queue)
-    streamer_func = streamer(queue)
-    #understand more about ensure futurue
-    consumer_fut = asyncio.ensure_future(consumer_func)
-    await streamer_func
-    #what does queue  join do
-    await queue.join()
-    consumer_fut.cancel()
-    
+
+    queue = asyncio.Queue()
+    asyncio.create_task(consumer(pg_pool, queue)),
+    data_streams = [asyncio.create_task(streamer(filename, queue)) for filename in ribs]
+
+    await asyncio.gather(*data_streams)
+
+    await logger.shutdown()
 if __name__ == "__main__":
 
     loop = asyncio.get_event_loop()
