@@ -97,14 +97,14 @@ class RibConsumer():
         except Exception as e:
             print(f'Error Parsing File Contents for {collector}:{interval}: {e}')
     @staticmethod
-    def reader(ribs_directory=None, file=None):
+    def current_rib_files(ribs_directory=None):
         ribs_directory = ribs_directory if ribs_directory is not None else 'ribs'
-        """for directory in os.listdir(ribs_directory):
+        files = []
+        for directory in os.listdir(ribs_directory):
             for filename in os.listdir(f"{ribs_directory}/{directory}"):
-                for row in open(f"{ribs_directory}/{directory}/{filename}", "r"):
-                    yield row"""
-        for row in open(file, "r"):
-            yield row
+                files.append(f"{ribs_directory}/{directory}/{filename}")
+        return files
+
 
         
 
