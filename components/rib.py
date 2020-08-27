@@ -6,7 +6,7 @@ import datetime
 import os
 import errno
 import bz2
-from .bgpdump import BgpDump
+from bgpdump import BgpDump
 from multiprocessing import Pool
 import itertools
 
@@ -96,11 +96,15 @@ class RibConsumer():
             os.remove(f'{output_directory}/{collector}/rib.{fileDate}.{interval}.decomp')
         except Exception as e:
             print(f'Error Parsing File Contents for {collector}:{interval}: {e}')
-
-    def ribs_to_list(self, ribs_directory):
+    @staticmethod
+    def reader(ribs_directory=None):
         ribs_directory = ribs_directory if ribs_directory is not None else 'ribs'
-        for directory in ribs_directory:
-            return False
+        for directory in os.listdir(ribs_directory):
+            for filename in os.listdir(f"{ribs_directory}/{directory}"):
+                for row in open(f"{ribs_directory}/{directory}/{filename}", "r"):
+                    yield row
+
+        
 
 
     def cleanup_ribs(self, output_directory):
