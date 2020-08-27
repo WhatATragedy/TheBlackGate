@@ -4,6 +4,7 @@ import os
 import csv
 from io import StringIO
 from psycopg2.extensions import AsIs
+from components.rib import RibConsumer
 
 class PostgresInterface():
     def read_config(self, filename='components/configs/database.ini', section='postgresql'):
@@ -132,11 +133,9 @@ class PostgresInterface():
         finally:
             if conn is not None:
                 conn.close()
-    def import_ribs_to_postgres(self, data):
-        return False
-        #copy_expert(sql, file, size=8192):
 
     def insert_asn_names(self, data):
+        conn = None
         try:
             # read the connection parameters
             params = self.read_config()
